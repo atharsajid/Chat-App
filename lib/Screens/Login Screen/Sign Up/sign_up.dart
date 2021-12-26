@@ -1,4 +1,3 @@
-
 import 'package:chat_app/Components/components.dart';
 import 'package:chat_app/Screens/Login%20Screen/Sign%20In/sign_in.dart';
 import 'package:chat_app/Screens/Login%20Screen/Sign%20Up/controller.dart';
@@ -58,8 +57,7 @@ class SignUp extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: MediaQuery.of(context).size.height*0.15,
-              
+              height: MediaQuery.of(context).size.height * 0.15,
             ),
             Container(
               margin: EdgeInsets.symmetric(
@@ -130,12 +128,20 @@ class SignUp extends StatelessWidget {
                   side: BorderSide(color: Colors.transparent, width: 2),
                 ),
                 onPressed: () {
-                  controller.signup(emailcontroller.text, passcontroller.text);
-                  controller.saveUser(namecontroller.text, emailcontroller.text,
-                      passcontroller.text);
-                  emailcontroller.clear();
-                  passcontroller.clear();
-                  namecontroller.clear();
+                  if (emailcontroller.text.isEmpty &&
+                      namecontroller.text.isEmpty &&
+                      passcontroller.text.isEmpty) {
+                    Get.snackbar(
+                        "Required", "Name, Email and Password are required",snackPosition: SnackPosition.BOTTOM);
+                  } else {
+                    controller.signup(
+                        emailcontroller.text, passcontroller.text);
+                    controller.saveUser(namecontroller.text,
+                        emailcontroller.text, passcontroller.text);
+                    emailcontroller.clear();
+                    passcontroller.clear();
+                    namecontroller.clear();
+                  }
                 },
                 icon: Icon(
                   Icons.person_add,
