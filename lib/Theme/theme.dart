@@ -19,7 +19,7 @@ class CustomTheme with ChangeNotifier {
       backgroundColor: Colors.white,
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.white,
-        shadowColor: Colors.transparent,
+        shadowColor: Colors.white,
         foregroundColor: Colors.black,
       ),
       textTheme: const TextTheme(

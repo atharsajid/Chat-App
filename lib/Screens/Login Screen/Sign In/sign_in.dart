@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 class SignIn extends StatelessWidget {
   SignIn({Key? key}) : super(key: key);
   final logincontroller = Get.put(Login());
+  final googleCont = Get.put(GoogleSignInController());
   TextEditingController emailcontroller = TextEditingController();
   TextEditingController passcontroller = TextEditingController();
 
@@ -36,7 +37,7 @@ class SignIn extends StatelessWidget {
             ),
             Image.asset(
               "images/1.png",
-              height: 100,
+              height: 85,
               color: white,
             ),
             Text(
@@ -56,12 +57,12 @@ class SignIn extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: 100,
+              height: MediaQuery.of(context).size.height * 0.1,
             ),
             Container(
               margin: EdgeInsets.symmetric(
                   horizontal: MediaQuery.of(context).size.width * 0.1),
-              height: 50,
+              height: 45,
               child: TextField(
                 keyboardType: TextInputType.emailAddress,
                 style: TextStyle(color: white, fontSize: 18),
@@ -78,7 +79,7 @@ class SignIn extends StatelessWidget {
             Container(
               margin: EdgeInsets.symmetric(
                   horizontal: MediaQuery.of(context).size.width * 0.1),
-              height: 55,
+              height: 45,
               child: Obx(() {
                 return TextField(
                   style: TextStyle(color: white, fontSize: 18),
@@ -103,11 +104,12 @@ class SignIn extends StatelessWidget {
               }),
             ),
             SizedBox(
-              height: 20,
+              height: 10,
             ),
             GetBuilder<Login>(builder: (controller) {
               return OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(
+                  minimumSize: Size(200, 50),
                   backgroundColor: primary,
                   side: BorderSide(color: Colors.transparent, width: 2),
                 ),
@@ -153,8 +155,66 @@ class SignIn extends StatelessWidget {
                     ),
                   ),
                 ),
+                SizedBox(
+                  height: 10,
+                ),
               ],
-            )
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  height: 1,
+                  color: Colors.white,
+                  width: 75,
+                  margin: EdgeInsets.symmetric(horizontal: 5),
+                ),
+                Text(
+                  "OR",
+                  style: TextStyle(
+                    color: white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 5),
+                  height: 1,
+                  color: Colors.white,
+                  width: 75,
+                ),
+              ],
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.02,
+            ),
+            Text(
+              "Login with Google",
+              style: TextStyle(
+                color: white,
+                fontSize: 18,
+                letterSpacing: 2,
+              ),
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.02,
+            ),
+            GestureDetector(
+              onTap: () {
+                // Get.to(HomeScreen());
+
+                googleCont.login();
+                if (googleCont.googleaccount.value == null) {
+                  Get.dialog(Center(
+                    child: CircularProgressIndicator(),
+                  ));
+                } else {}
+              },
+              child: Image.asset(
+                "images/google.png",
+                height: 40,
+              ),
+            ),
           ],
         ),
       ),
