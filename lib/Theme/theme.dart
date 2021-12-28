@@ -17,11 +17,11 @@ class CustomTheme with ChangeNotifier {
     return ThemeData(
       primaryColor: primary,
       backgroundColor: Colors.white,
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.white,
-        shadowColor: Colors.white,
-        foregroundColor: Colors.black,
-      ),
+      // appBarTheme: const AppBarTheme(
+      //   backgroundColor: Colors.white,
+      //   shadowColor: Colors.white,
+      //   foregroundColor: Colors.black,
+      // ),
       textTheme: const TextTheme(
         headline1: TextStyle(
             color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),

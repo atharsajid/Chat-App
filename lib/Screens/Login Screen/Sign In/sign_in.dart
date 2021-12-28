@@ -114,7 +114,7 @@ class SignIn extends StatelessWidget {
                   side: BorderSide(color: Colors.transparent, width: 2),
                 ),
                 onPressed: () {
-                  controller.signin(emailcontroller.text, passcontroller.text);
+                  // controller.signin(emailcontroller.text, passcontroller.text);
                   emailcontroller.clear();
                   passcontroller.clear();
                 },
@@ -201,8 +201,7 @@ class SignIn extends StatelessWidget {
             ),
             GestureDetector(
               onTap: () {
-                // Get.to(HomeScreen());
-
+           
                 googleCont.login();
                 if (googleCont.googleaccount.value == null) {
                   Get.dialog(Center(

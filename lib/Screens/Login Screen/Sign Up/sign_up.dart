@@ -132,12 +132,13 @@ class SignUp extends StatelessWidget {
                       namecontroller.text.isEmpty &&
                       passcontroller.text.isEmpty) {
                     Get.snackbar(
-                        "Required", "Name, Email and Password are required",snackPosition: SnackPosition.BOTTOM);
+                        "Required", "Name, Email and Password are required",
+                        snackPosition: SnackPosition.BOTTOM);
                   } else {
-                    controller.signup(
-                        emailcontroller.text, passcontroller.text);
-                    controller.saveUser(namecontroller.text,
-                        emailcontroller.text, passcontroller.text);
+                    // controller.signup(
+                    //     emailcontroller.text, passcontroller.text);
+                    // controller.saveUser(namecontroller.text,
+                    //     emailcontroller.text, passcontroller.text);
                     emailcontroller.clear();
                     passcontroller.clear();
                     namecontroller.clear();
