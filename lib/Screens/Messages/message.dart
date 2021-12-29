@@ -1,26 +1,42 @@
 import 'package:chat_app/Components/components.dart';
 import 'package:chat_app/Screens/Login%20Screen/Sign%20In/controller.dart';
 import 'package:chat_app/Screens/Messages/controller.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class Message extends StatefulWidget {
   final String name;
-  Message({Key? key, required this.name}) : super(key: key);
+  final String email;
 
+  Message({Key? key, required this.name, required this.email})
+      : super(key: key);
   @override
   State<Message> createState() => _MessageState();
 }
 
+@override
 class _MessageState extends State<Message> {
   final googlecontroller = Get.find<GoogleSignInController>();
-
   TextEditingController msgcontroller = TextEditingController();
-
   final messagecontroller = Get.put(MessageController());
+  final Stream<QuerySnapshot> _usersStream = FirebaseFirestore.instance
+      .collection('Users')
+      .doc("athersajid820@gmail.com")
+      .collection("Message")
+      .doc("makemoney3656@gmail.com").collection("ChatRoom")
+      .orderBy("Time", descending: true)
+      .snapshots();
 
+  var emaildoc = "";
+    @override
+  void initState() {
+   
+    super.initState();
+    
+  } 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { 
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
@@ -53,43 +69,70 @@ class _MessageState extends State<Message> {
         body: Column(
           children: [
             Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    ListView.builder(
-               physics: NeverScrollableScrollPhysics(),
-                    
-                        shrinkWrap: true,
-                        itemCount: list.length,
-                        itemBuilder: (BuildContext context, index) {
-                          return Container(
-                            width: 150,
-                           
-                            margin: EdgeInsets.all(10),
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: white,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(32),
-                                bottomLeft: Radius.circular(32),
-                                bottomRight: Radius.circular(32),
-                              ),
+              child: StreamBuilder<QuerySnapshot>(
+                stream: _usersStream,
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return Text('Something went wrong');
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+
+                  return ListView(
+                      reverse: true,
+                      physics: BouncingScrollPhysics(),
+                      shrinkWrap: true,
+                      scrollDirection: Axis.vertical,
+                      children:
+                          snapshot.data!.docs.map((DocumentSnapshot document) {
+                        Map<String, dynamic> data =
+                            document.data()! as Map<String, dynamic>;
+                        return Container(
+                          margin: data["Type"] == "Send"
+                              ? EdgeInsets.only(
+                                  left: MediaQuery.of(context).size.width * 0.3,
+                                  top: 10,
+                                  right: 10)
+                              : EdgeInsets.only(
+                                  right:
+                                      MediaQuery.of(context).size.width * 0.3,
+                                  top: 10,
+                                  left: 10),
+                          padding: EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                            color: data["Type"] == "Send"
+                                ? white
+                                : Colors.blue.shade400,
+                            borderRadius: data["Type"] == "Send"
+                                ? const BorderRadius.only(
+                                    topLeft: Radius.circular(32),
+                                    bottomLeft: Radius.circular(32),
+                                    topRight: Radius.circular(32),
+                                  )
+                                : const BorderRadius.only(
+                                    bottomRight: Radius.circular(32),
+                                    bottomLeft: Radius.circular(32),
+                                    topRight: Radius.circular(32),
+                                  ),
+                          ),
+                          child: Text(
+                            data["Message"],
+                            style: TextStyle(
+                              color: data["Type"] == "Send"
+                                  ? Colors.black
+                                  : Colors.white,
+                              fontSize: 16,
                             ),
-                            child: Text(
-                              "${list[index]}",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 18,
-                              ),
-                              textAlign: TextAlign.start,
-                            ),
-                          );
-                        })
-                  ],
-                ),
+                            textAlign: TextAlign.start,
+                          ),
+                        );
+                      }).toList());
+                },
               ),
-           
+            ),
             messageField(context)
           ],
         ),
@@ -97,42 +140,54 @@ class _MessageState extends State<Message> {
     );
   }
 
+
 //MessageField
-  Row messageField(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Container(
-            height: 60,
-            width: MediaQuery.of(context).size.width * 0.8,
-            child: TextField(
-              controller: msgcontroller,
-              style: TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                hintText: "Write your Message",
-                filled: true,
-                fillColor: Colors.blue.withOpacity(0.3),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(32),
-                  borderSide: BorderSide(color: Colors.transparent, width: 0),
+  Container messageField(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 5, top: 5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Container(
+              height: 60,
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: TextField(
+                controller: msgcontroller,
+                style: TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: "Write your Message",
+                  filled: true,
+                  fillColor: Colors.blue.withOpacity(0.3),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(32),
+                    borderSide: BorderSide(color: Colors.transparent, width: 0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(32),
+                    borderSide: BorderSide(color: Colors.transparent, width: 0),
+                  ),
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(32),
-                  borderSide: BorderSide(color: Colors.transparent, width: 0),
-                ),
-              ),
-            )),
-        FloatingActionButton(
-          backgroundColor: primary,
-          onPressed: () {
-            setState(() {
-              list.add(msgcontroller.text);
-              msgcontroller.clear();
-            });
-          },
-          child: Icon(Icons.send),
-        ),
-      ],
+              )),
+          FloatingActionButton(
+            backgroundColor: primary,
+            onPressed: () {
+              setState(() {
+                if (msgcontroller.text.isNotEmpty) {
+                  messagecontroller.send(
+                      msgcontroller.text, googlecontroller.email,widget.email);
+                  messagecontroller.received(msgcontroller.text, widget.email,googlecontroller.email);
+
+                  list.add(msgcontroller.text);
+                  msgcontroller.clear();
+                } else {
+                  print("Empty");
+                }
+              });
+            },
+            child: Icon(Icons.send),
+          ),
+        ],
+      ),
     );
   }
 
@@ -167,3 +222,4 @@ class _MessageState extends State<Message> {
 }
 
 var list = [];
+var newlist = list.reversed;

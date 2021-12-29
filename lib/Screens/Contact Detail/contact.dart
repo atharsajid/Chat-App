@@ -63,6 +63,7 @@ class Contact extends StatelessWidget {
                       Get.to(
                         Message(
                           name: data["Name"],
+                          email: data["Email"],
                         ),
                       );
                     },

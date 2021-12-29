@@ -65,13 +65,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       CircleAvatar(
-                        backgroundImage:
-                            NetworkImage(googlecontroller.photoUrl),
+                        backgroundImage: NetworkImage(googlecontroller.photoUrl),
                       ),
                       popup(),
                     ],
                   ),
-                  
+
                   // categoryList(),
                   // status(),
                 ],
@@ -79,7 +78,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Expanded(
                 child: Container(
-              margin: EdgeInsets.only(top: 20, ),
+              margin: EdgeInsets.only(
+                top: 20,
+              ),
               width: double.infinity,
               decoration: BoxDecoration(
                 color: white,
@@ -182,6 +183,4 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
-
-
 }
