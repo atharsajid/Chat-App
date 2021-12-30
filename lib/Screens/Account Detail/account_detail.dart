@@ -1,60 +1,77 @@
-import 'package:chat_app/Screens/Login%20Screen/Sign%20In/controller.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:chat_app/Components/components.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AccountDetail extends StatelessWidget {
-  AccountDetail({Key? key}) : super(key: key);
-  TextEditingController namecontroller = TextEditingController();
-  final currentUserController = Get.find<Login>();
-  final googleController = Get.find<GoogleSignInController>();
-  final Stream<QuerySnapshot> _usersStream =
-      FirebaseFirestore.instance.collection('Users').snapshots();
+  final String name;
+  final String email;
+  final String photoUrl;
+  AccountDetail({
+    Key? key,
+    required this.name,
+    required this.email,
+    required this.photoUrl,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: StreamBuilder<QuerySnapshot>(
-        stream: _usersStream,
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasError) {
-            return Text('Something went wrong');
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Text("Loading");
-          }
-
-          return ListView(
-              children: snapshot.data!.docs.map((DocumentSnapshot document) {
-            Map<String, dynamic> data =
-                document.data()! as Map<String, dynamic>;
-            return Column(
-              children: [
-                ListTile(
-                  title: Text(data["Name"]),
-                  trailing: IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.edit),
-                  ),
-                ),
-                ListTile(
-                  title: Text(data["Email"]),
-                  trailing: IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.edit),
-                  ),
-                ),
-                ListTile(
-                  title: Text(data["PhotUrl"]),
-                  trailing: IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.edit),
-                  ),
-                ),
-              ],
-            );
-          }).toList());
-        },
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage("images/3.jpg"),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(
+            Colors.black.withOpacity(0.5),
+            BlendMode.darken,
+          ),
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          foregroundColor: primary,
+          title: Text(
+            "Contact Detail",
+            style: TextStyle(color: white),
+          ),
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(
+              width: double.infinity,
+              height: 50,
+            ),
+            CircleAvatar(
+              backgroundImage: NetworkImage(photoUrl),
+              radius: 55,
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
+              name,
+              style: TextStyle(
+                fontSize: 32,
+                color: white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
+              email,
+              style: TextStyle(
+                fontSize: 22,
+                color: white,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

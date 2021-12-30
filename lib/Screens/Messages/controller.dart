@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class MessageController extends GetxController {
-  received(String message, String email,String email2) async {
+  received(String message, String email, String email2) async {
     await FirebaseFirestore.instance
         .collection("Users")
-        .doc(email).collection("Message").doc(email2)
+        .doc(email)
+        .collection("Message")
+        .doc(email2)
         .collection("ChatRoom")
         .add({
       "Message": message,
@@ -15,37 +17,39 @@ class MessageController extends GetxController {
     });
   }
 
-  send(String message, String email,String email2) async {
+  send(String message, String email, String email2) async {
     await FirebaseFirestore.instance
         .collection("Users")
         .doc(email)
-        .collection("Message").doc(email2).collection("ChatRoom")
+        .collection("Message")
+        .doc(email2)
+        .collection("ChatRoom")
         .add({
       "Message": message,
       "Type": "Send",
       "Time": DateTime.now(),
     });
   }
-}
 
-
-class InitState extends StatefulWidget {
-  const InitState({ Key? key }) : super(key: key);
-
-  @override
-  _InitStateState createState() => _InitStateState();
-}
-
-class _InitStateState extends State<InitState> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      
-    );
+  dynamic userStream;
+  getmessage(String email1, String email2) {
+    userStream = FirebaseFirestore.instance
+        .collection('Users')
+        .doc(email1)
+        .collection("Message")
+        .doc(email2)
+        .collection("ChatRoom")
+        .orderBy("Time", descending: true)
+        .snapshots();
   }
 }
+
+
+  // final Stream<QuerySnapshot> _usersStream = FirebaseFirestore.instance
+  //     .collection('Users')
+  //     .doc("athersajid820@gmail.com")
+  //     .collection("Message")
+  //     .doc("makemoney3656@gmail.com")
+  //     .collection("ChatRoom")
+  //     .orderBy("Time", descending: true)
+  //     .snapshots();

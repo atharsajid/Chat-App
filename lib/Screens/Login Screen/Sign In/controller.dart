@@ -21,7 +21,6 @@ class Login extends GetxController {
           .snapshots();
       user = _user;
 
-      Get.off(AccountDetail());
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         return Get.snackbar(

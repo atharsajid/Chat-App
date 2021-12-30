@@ -4,9 +4,11 @@ import 'package:chat_app/Screens/Contact%20Detail/contact.dart';
 import 'package:chat_app/Screens/Home%20Screen/controller.dart';
 import 'package:chat_app/Screens/Login%20Screen/Sign%20In/controller.dart';
 import 'package:chat_app/Screens/Messages/message.dart';
+import 'package:chat_app/Theme/theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -27,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage("images/3.jpg"),
+          image: AssetImage("images/2.jpg"),
           fit: BoxFit.cover,
           colorFilter: ColorFilter.mode(
             Colors.black.withOpacity(0.4),
@@ -57,39 +59,105 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       Spacer(),
                       IconButton(
-                        onPressed: () {
-                          Get.to(AccountDetail());
-                        },
+                        onPressed: () {},
                         icon: Icon(
                           Icons.search,
                         ),
                       ),
-                      CircleAvatar(
-                        backgroundImage: NetworkImage(googlecontroller.photoUrl),
+                      GestureDetector(
+                        onTap: () => Get.to(AccountDetail(
+                            name: googlecontroller.name,
+                            email: googlecontroller.email,
+                            photoUrl: googlecontroller.photoUrl)),
+                        child: CircleAvatar(
+                          backgroundImage:
+                              NetworkImage(googlecontroller.photoUrl),
+                        ),
                       ),
                       popup(),
                     ],
                   ),
-
-                  // categoryList(),
-                  // status(),
                 ],
               ),
             ),
             Expanded(
                 child: Container(
               margin: EdgeInsets.only(
-                top: 20,
+                top: 10,
               ),
+              padding: EdgeInsets.all(15),
               width: double.infinity,
               decoration: BoxDecoration(
-                color: white,
+                color: Colors.white.withOpacity(0.9),
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(32),
-                  topRight: Radius.circular(32),
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
                 ),
               ),
-              child: Text(""),
+              child: Column(
+                children: [
+                  Container(
+                    height:55,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                     
+                        //   borderRadius: BorderRadius.circular(24),
+                        //   color:white,
+                        //   boxShadow:[
+                        //     BoxShadow(
+
+                        //       blurRadius: 8,
+                        //       spreadRadius: 3,
+                        //       color: Colors.grey.withOpacity(0.3)
+                        //     )
+                        //   ]
+                        ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        CircleAvatar(
+                          backgroundImage:
+                              NetworkImage(googlecontroller.photoUrl),
+                          radius: 28,
+                        ),
+                        SizedBox(width: 10,),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              googlecontroller.name,
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              "New Message",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: black,
+                              
+                              ),
+                            ),
+                          ],
+                        ),
+                        Spacer(),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Icon( Icons.circle,color: Colors.green,),
+                            Text(DateFormat.jm().format(DateTime.now()),style: TextStyle(color: Colors.black),),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                  
+                  Divider(height: 15,indent: 10,endIndent: 10,color: Colors.black,)
+                ],
+              ),
             ))
           ],
         ),
@@ -160,7 +228,9 @@ class _HomeScreenState extends State<HomeScreen> {
       itemBuilder: (BuildContext context) {
         return [
           PopupMenuItem(
-            child: Text("New Message"),
+            child: GestureDetector(
+              onTap: () => Get.to(Contact()),
+              child: Text("New Message")),
           ),
           PopupMenuItem(
             child: Text("New Group"),

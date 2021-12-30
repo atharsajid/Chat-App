@@ -64,6 +64,7 @@ class Contact extends StatelessWidget {
                         Message(
                           name: data["Name"],
                           email: data["Email"],
+                          photUrl: data["PhotUrl"],
                         ),
                       );
                     },
