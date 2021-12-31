@@ -1,17 +1,16 @@
-import 'package:chat_app/Components/components.dart';
 import 'package:chat_app/Screens/Account%20Detail/account_detail.dart';
 import 'package:chat_app/Screens/Contact%20Detail/contact.dart';
 import 'package:chat_app/Screens/Home%20Screen/controller.dart';
 import 'package:chat_app/Screens/Login%20Screen/Sign%20In/controller.dart';
+import 'package:chat_app/Screens/Messages/controller.dart';
 import 'package:chat_app/Screens/Messages/message.dart';
 import 'package:chat_app/Theme/theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -21,18 +20,31 @@ class _HomeScreenState extends State<HomeScreen> {
   final googlecontroller = Get.find<GoogleSignInController>();
 
   final groupcontroller = Get.put(ContactListController());
+  final messagecontroller = Get.put(MessageController());
   int isSelected = 0;
-  final Stream<QuerySnapshot> _usersStream =
-      FirebaseFirestore.instance.collection('Users').snapshots();
+  final Stream<QuerySnapshot> _usersStream = FirebaseFirestore.instance
+      .collection('Users')
+      .doc("athersajid820@gmail.com")
+      .collection("NewMessage")
+      .snapshots();
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   messagecontroller.getnewmessage(
+  //     googlecontroller.email,
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage("images/2.jpg"),
+          image: const AssetImage("images/1.jpg"),
           fit: BoxFit.cover,
           colorFilter: ColorFilter.mode(
-            Colors.black.withOpacity(0.4),
+            Colors.black.withOpacity(0.2),
             BlendMode.darken,
           ),
         ),
@@ -42,14 +54,14 @@ class _HomeScreenState extends State<HomeScreen> {
         body: Column(
           children: [
             Container(
-              padding: EdgeInsets.only(left: 20),
-              margin: EdgeInsets.only(top: 25),
+              padding: const EdgeInsets.only(left: 20),
+              margin: const EdgeInsets.only(top: 25),
               child: Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         "Messages,",
                         style: TextStyle(
                           fontSize: 24,
@@ -57,10 +69,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.white,
                         ),
                       ),
-                      Spacer(),
+                      const Spacer(),
                       IconButton(
                         onPressed: () {},
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.search,
                         ),
                       ),
@@ -82,81 +94,150 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Expanded(
                 child: Container(
-              margin: EdgeInsets.only(
+              margin: const EdgeInsets.only(
                 top: 10,
               ),
-              padding: EdgeInsets.all(15),
+              padding: EdgeInsets.only(
+                left: 15,
+                right: 15,
+              ),
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withOpacity(0.6),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(24),
                   topRight: Radius.circular(24),
                 ),
               ),
-              child: Column(
-                children: [
-                  Container(
-                    height:55,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                     
-                        //   borderRadius: BorderRadius.circular(24),
-                        //   color:white,
-                        //   boxShadow:[
-                        //     BoxShadow(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: _usersStream,
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return Text('Something went wrong');
+                  }
 
-                        //       blurRadius: 8,
-                        //       spreadRadius: 3,
-                        //       color: Colors.grey.withOpacity(0.3)
-                        //     )
-                        //   ]
-                        ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        CircleAvatar(
-                          backgroundImage:
-                              NetworkImage(googlecontroller.photoUrl),
-                          radius: 28,
-                        ),
-                        SizedBox(width: 10,),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+
+                  return ListView(
+                      physics: BouncingScrollPhysics(),
+                      shrinkWrap: true,
+                      scrollDirection: Axis.vertical,
+                      children:
+                          snapshot.data!.docs.map((DocumentSnapshot document) {
+                        Map<String, dynamic> data =
+                            document.data()! as Map<String, dynamic>;
+                        return Column(
                           children: [
-                            Text(
-                              googlecontroller.name,
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: black,
-                                fontWeight: FontWeight.bold,
+                            GestureDetector(
+                              onLongPress: () {
+                                Get.dialog(
+                                  AlertDialog(
+                                    title: Text("Delete Message"),
+                                    content: Text("Are you sure to delete?"),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Get.back();
+                                        },
+                                        child: Text("Cancel"),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          document.reference.delete();
+                                          Get.back();
+                                        },
+                                        child: Text("Confirm"),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                              onTap: () {
+                                Get.to(
+                                  Message(
+                                    name: data["Name"],
+                                    email: data["Email"],
+                                    photUrl: data["PhotUrl"],
+                                  ),
+                                );
+                                document.reference.update({"Bool": false});
+                              },
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  CircleAvatar(
+                                    backgroundImage:
+                                        NetworkImage(data["PhotUrl"]),
+                                    radius: 26,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        data["Name"],
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: black,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.5,
+                                        child: Text(
+                                          data["Message"],
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: black,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Spacer(),
+                                  Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      data["Bool"]
+                                          ? Icon(
+                                              Icons.circle,
+                                              color: Colors.green,
+                                            )
+                                          : Container(
+                                              width: 0,
+                                            ),
+                                      Text(
+                                        data["Time"],
+                                        style: TextStyle(color: Colors.black),
+                                      ),
+                                    ],
+                                  )
+                                ],
                               ),
                             ),
-                            Text(
-                              "New Message",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: black,
-                              
-                              ),
-                            ),
+                            const Divider(
+                              height: 15,
+                              indent: 10,
+                              endIndent: 10,
+                              color: Colors.black,
+                            )
                           ],
-                        ),
-                        Spacer(),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Icon( Icons.circle,color: Colors.green,),
-                            Text(DateFormat.jm().format(DateTime.now()),style: TextStyle(color: Colors.black),),
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                  
-                  Divider(height: 15,indent: 10,endIndent: 10,color: Colors.black,)
-                ],
+                        );
+                      }).toList());
+                },
               ),
             ))
           ],
@@ -173,53 +254,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-//Status bar
-  // StreamBuilder<QuerySnapshot<Object?>> status() {
-  //   return StreamBuilder<QuerySnapshot>(
-  //                 stream: _usersStream,
-  //                 builder: (BuildContext context,
-  //                     AsyncSnapshot<QuerySnapshot> snapshot) {
-  //                   if (snapshot.hasError) {
-  //                     return Text('Something went wrong');
-  //                   }
-
-  //                   if (snapshot.connectionState == ConnectionState.waiting) {
-  //                     return Text("Loading");
-  //                   }
-
-  //                   return Container(
-  //                     alignment: Alignment.centerLeft,
-  //                     height: 50,
-  //                     child: ListView(
-  //                         physics: BouncingScrollPhysics(),
-  //                         shrinkWrap: true,
-  //                         scrollDirection: Axis.horizontal,
-  //                         children: snapshot.data!.docs
-  //                             .map((DocumentSnapshot document) {
-  //                           Map<String, dynamic> data =
-  //                               document.data()! as Map<String, dynamic>;
-  //                           return GestureDetector(
-  //                             onTap: () {
-  //                               Get.to(
-  //                                 Message(
-  //                                   name: data["Name"],
-  //                                 ),
-  //                               );
-  //                             },
-  //                             child: Container(
-  //                               margin: EdgeInsets.only(left: 10),
-  //                               child: CircleAvatar(
-  //                                 backgroundImage:
-  //                                     NetworkImage(data["PhotUrl"]),
-  //                                 radius: 25,
-  //                               ),
-  //                             ),
-  //                           );
-  //                         }).toList()),
-  //                   );
-  //                 },
-  //               );
-  // }
 
 //PopUp menu Button
   PopupMenuButton<String> popup() {
@@ -229,8 +263,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return [
           PopupMenuItem(
             child: GestureDetector(
-              onTap: () => Get.to(Contact()),
-              child: Text("New Message")),
+                onTap: () => Get.to(Contact()), child: Text("New Message")),
           ),
           PopupMenuItem(
             child: Text("New Group"),

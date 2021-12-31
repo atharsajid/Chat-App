@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class MessageController extends GetxController {
   received(String message, String email, String email2) async {
@@ -39,6 +40,39 @@ class MessageController extends GetxController {
         .collection("Message")
         .doc(email2)
         .collection("ChatRoom")
+        .orderBy("Time", descending: true)
+        .snapshots();
+  }
+
+  newMessage(
+    String email,
+    String email2,
+    String message,
+    String photourl,
+    String name,
+  ) async {
+    await FirebaseFirestore.instance
+        .collection("Users")
+        .doc(email)
+        .collection("NewMessage")
+        .doc(email2)
+        .set({
+      "Message": message,
+      "Type": "Received",
+      "Time": DateFormat.jm().format(DateTime.now()),
+      "PhotUrl": photourl,
+      "Name": name,
+      "Email": email,
+      "Bool":true,
+    });
+  }
+
+  dynamic getNewMessage;
+  getnewmessage(String email1) {
+    userStream = FirebaseFirestore.instance
+        .collection('Users')
+        .doc(email1)
+        .collection("NewMessage")
         .orderBy("Time", descending: true)
         .snapshots();
   }

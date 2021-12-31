@@ -220,6 +220,13 @@ class _MessageState extends State<Message> {
                       msgcontroller.text, googlecontroller.email, widget.email);
                   messagecontroller.received(
                       msgcontroller.text, widget.email, googlecontroller.email);
+                  messagecontroller.newMessage(
+                    widget.email,
+                    googlecontroller.email,
+                    msgcontroller.text,
+                    widget.photUrl,
+                    widget.name,
+                  );
                   msgcontroller.clear();
                 } else {
                   print("Empty");
